@@ -17,7 +17,7 @@ func chatworkHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	fmt.Println(body)
+	fmt.Println(string(body))
 }
 
 func main() {
