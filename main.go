@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -13,5 +14,6 @@ func main() {
 		w.Write([]byte("Hello Chatwork Bot"))
 	})
 
+	fmt.Println("Server start to listen")
 	http.ListenAndServe(":80", router)
 }
