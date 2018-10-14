@@ -8,6 +8,8 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/hungtin/chatworkbot/api"
+
 	"github.com/gorilla/mux"
 	"github.com/hungtin/chatworkbot/model"
 )
@@ -41,6 +43,8 @@ func chatworkHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(eventObj)
+	cw := api.NewChatworkClient("0e7249c219c3afee79a7ada2bfad714c")
+	cw.PostMessage(eventObj.RoomID, "What is "+eventObj.MessageID)
 }
 
 func main() {

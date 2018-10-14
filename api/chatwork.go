@@ -1,8 +1,12 @@
 package api
 
 import (
+	"fmt"
+	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"strings"
 )
 
 // ChatworkBaseURL entry point base to the api
@@ -25,11 +29,11 @@ func NewChatworkClient(token string) Chatwork {
 // prepareReq help to create Request
 // method should be GET, POST, PUT, DELETE
 // endpoint start WITH first slash
-func (cw Chatwork) prepareReq(method string, endpoint string) (*http.Request, error) {
+func (cw Chatwork) prepareReq(method, endpoint string, body io.Reader) (*http.Request, error) {
 	req, err := http.NewRequest(
 		method,
 		ChatworkBaseURL+endpoint,
-		nil)
+		body)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +45,7 @@ func (cw Chatwork) prepareReq(method string, endpoint string) (*http.Request, er
 // GetMe request GET on /me uri
 func (cw Chatwork) GetMe() ([]byte, error) {
 	client := &http.Client{}
-	req, err := cw.prepareReq("GET", "/me")
+	req, err := cw.prepareReq("GET", "/me", nil)
 	if err != nil {
 		return nil, err
 	}
@@ -58,4 +62,21 @@ func (cw Chatwork) GetMe() ([]byte, error) {
 	}
 
 	return body, nil
+}
+
+// PostMessage send message to a room
+func (cw Chatwork) PostMessage(roomID int, message string) error {
+	client := &http.Client{}
+
+	endpoint := fmt.Sprintf(" /rooms/%v/messages", roomID)
+	data := url.Values{}
+	data.Set("body", message)
+
+	req, err := cw.prepareReq("POST", endpoint, strings.NewReader(data.Encode()))
+	_, err = client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
