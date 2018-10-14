@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -73,10 +74,11 @@ func (cw Chatwork) PostMessage(roomID int, message string) error {
 	data.Set("body", message)
 
 	req, err := cw.prepareReq("POST", endpoint, strings.NewReader(data.Encode()))
-	_, err = client.Do(req)
+	resp, err := client.Do(req)
 	if err != nil {
 		return err
 	}
+	log.Println(resp)
 
 	return nil
 }
