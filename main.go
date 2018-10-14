@@ -44,7 +44,7 @@ func chatworkHandlerFunc(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(eventObj)
 	cw := api.NewChatworkClient(api.ChatworkToken)
-	err = cw.PostMessage(eventObj.RoomID, "What is "+eventObj.MessageID)
+	err = cw.PostMessage(eventObj.RoomID, "What is "+eventObj.Body)
 	if err != nil {
 		log.Println(err)
 	}
