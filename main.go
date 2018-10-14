@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -8,16 +9,38 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/hungtin/chatworkbot/model"
 )
+
+func parseWebhookEvent(raw []byte) (*model.WebhookEvent, error) {
+	var obj map[string]*json.RawMessage
+	err := json.Unmarshal(raw, &obj)
+	if err != nil {
+		return nil, err
+	}
+
+	var eventObj = new(model.WebhookEvent)
+	err = json.Unmarshal(*obj["webhook_event"], eventObj)
+	if err != nil {
+		return nil, err
+	}
+
+	return eventObj, nil
+}
 
 func chatworkHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		log.Panicln(err)
+		log.Println(err)
 	}
 	defer r.Body.Close()
 
-	fmt.Println(string(body))
+	eventObj, err := parseWebhookEvent(body)
+	if err != nil {
+		log.Println(err)
+	}
+
+	fmt.Println(eventObj)
 }
 
 func main() {
