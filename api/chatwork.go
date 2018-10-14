@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -69,16 +68,18 @@ func (cw Chatwork) GetMe() ([]byte, error) {
 func (cw Chatwork) PostMessage(roomID int, message string) error {
 	client := &http.Client{}
 
-	endpoint := fmt.Sprintf(" /rooms/%v/messages", roomID)
+	endpoint := fmt.Sprintf("/rooms/%v/messages", roomID)
 	data := url.Values{}
 	data.Set("body", message)
 
 	req, err := cw.prepareReq("POST", endpoint, strings.NewReader(data.Encode()))
-	resp, err := client.Do(req)
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	_, err = client.Do(req)
 	if err != nil {
 		return err
 	}
-	log.Println(resp)
+	// TODO: add return value like message id
+	// or anything to clarify that message sent successfully
 
 	return nil
 }
