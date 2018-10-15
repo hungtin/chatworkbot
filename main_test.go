@@ -40,3 +40,13 @@ func TestChoseMemberHandler(t *testing.T) {
 
 	chooseMemberHandler(eventObj)
 }
+
+func TestRemoveTag(t *testing.T) {
+	testName := "巻嶋 雄大[Yudai Makishima][DEV][210][Ho Chi Minh][WEB担当]"
+	wantedName := "巻嶋 雄大"
+
+	name := removeTag(testName)
+	if name != wantedName {
+		t.Errorf("Wanted: %s, received: %s", wantedName, name)
+	}
+}

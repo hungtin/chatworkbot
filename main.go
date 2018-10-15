@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"regexp"
 	"strings"
 	"time"
 
@@ -17,32 +18,36 @@ import (
 	"github.com/hungtin/chatworkbot/model"
 )
 
-func randomMember() string {
-	rand.Seed(time.Now().UnixNano())
-	answers := []string{
-		"Tin",
-		"Makishima san",
-		"Tajima san",
-		"Tajima san",
-		"Tajima san",
-		"Jose san",
-		"Ryusei kun",
-		"Sakurai san",
+func removeTag(name string) string {
+	tagReg, err := regexp.Compile("\\[.+?\\]")
+	if err != nil {
+		log.Fatal(err)
 	}
-	return "選ばれた人: " + answers[rand.Intn(len(answers))]
+	noTagName := tagReg.ReplaceAllString(name, "")
+	return strings.TrimSpace(noTagName)
+}
+
+func randomMember(members *[]*model.Member) string {
+	rand.Seed(time.Now().UnixNano())
+
+	randomIndex := rand.Intn(len(*members))
+	return "選ばれた人: " + removeTag((*members)[randomIndex].Name)
 }
 
 func chooseMemberHandler(eventObj *model.WebhookEvent) {
 	cw := api.NewChatworkClient(api.ChatworkToken)
 	var err error
 	if strings.Contains(eventObj.Body, "誰") {
-		err = cw.PostMessage(eventObj.RoomID, randomMember())
+		// TODO: Error handler for this
+		members, _ := cw.GetMembers(eventObj.RoomID)
+		err = cw.PostMessage(eventObj.RoomID, randomMember(members))
 	} else {
 		err = cw.PostMessage(eventObj.RoomID, "わからん")
 	}
 
 	if err != nil {
 		log.Println(err)
+		cw.PostMessage(eventObj.RoomID, "エラーが発生しました")
 	}
 }
 
