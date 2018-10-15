@@ -21,13 +21,15 @@ func randomMember() string {
 	rand.Seed(time.Now().UnixNano())
 	answers := []string{
 		"Tin",
-		"Makishi",
-		"Tajima",
-		"Jose",
-		"Ryusei",
-		"Sakurai",
+		"Makishima san",
+		"Tajima san",
+		"Tajima san",
+		"Tajima san",
+		"Jose san",
+		"Ryusei kun",
+		"Sakurai san",
 	}
-	return "Chosen one: " + answers[rand.Intn(len(answers))]
+	return "選ばれた人: " + answers[rand.Intn(len(answers))]
 }
 
 func chooseMemberHandler(eventObj *model.WebhookEvent) {
