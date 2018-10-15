@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -8,6 +9,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/hungtin/chatworkbot/model"
 )
 
 // ChatworkBaseURL entry point base to the api
@@ -87,4 +90,24 @@ func (cw Chatwork) PostMessage(roomID int, message string) error {
 	log.Println(string(body))
 
 	return nil
+}
+
+// GetMembers return list of members in a room
+func (cw Chatwork) GetMembers(roomID int) (*[]*model.Member, error) {
+	client := &http.Client{}
+
+	endpoint := fmt.Sprintf("/rooms/%v/members", roomID)
+	req, err := cw.prepareReq("GET", endpoint, nil)
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	var members = new([]*model.Member)
+	body, _ := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	json.Unmarshal(body, members)
+
+	return members, nil
 }
