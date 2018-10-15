@@ -29,9 +29,10 @@ func removeTag(name string) string {
 
 func randomMember(members *[]*model.Member) string {
 	rand.Seed(time.Now().UnixNano())
-
 	randomIndex := rand.Intn(len(*members))
-	return "選ばれた人: " + removeTag((*members)[randomIndex].Name)
+
+	name := removeTag((*members)[randomIndex].Name) + " さん"
+	return "選ばれた人: " + name
 }
 
 func chooseMemberHandler(eventObj *model.WebhookEvent) {
