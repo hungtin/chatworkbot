@@ -5,14 +5,44 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"strings"
+	"time"
 
 	"github.com/hungtin/chatworkbot/api"
 
 	"github.com/gorilla/mux"
 	"github.com/hungtin/chatworkbot/model"
 )
+
+func randomMember() string {
+	rand.Seed(time.Now().UnixNano())
+	answers := []string{
+		"Tin",
+		"Makishi",
+		"Tajima",
+		"Jose",
+		"Ryusei",
+		"Sakurai",
+	}
+	return "Chosen one: " + answers[rand.Intn(len(answers))]
+}
+
+func chooseMemberHandler(eventObj *model.WebhookEvent) {
+	cw := api.NewChatworkClient(api.ChatworkToken)
+	var err error
+	if strings.Contains(eventObj.Body, "誰") {
+		err = cw.PostMessage(eventObj.RoomID, randomMember())
+	} else {
+		err = cw.PostMessage(eventObj.RoomID, "わからん")
+	}
+
+	if err != nil {
+		log.Println(err)
+	}
+}
 
 func parseWebhookEvent(raw []byte) (*model.WebhookEvent, error) {
 	var obj map[string]*json.RawMessage
@@ -43,11 +73,7 @@ func chatworkHandlerFunc(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println(eventObj)
-	cw := api.NewChatworkClient(api.ChatworkToken)
-	err = cw.PostMessage(eventObj.RoomID, "What is "+eventObj.Body)
-	if err != nil {
-		log.Println(err)
-	}
+	chooseMemberHandler(eventObj)
 }
 
 func main() {

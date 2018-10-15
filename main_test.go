@@ -26,3 +26,17 @@ func TestParseWebhookEvent(t *testing.T) {
 		t.Errorf("Want %v, but received %v", wantedObj, obj)
 	}
 }
+
+func TestChoseMemberHandler(t *testing.T) {
+	eventObj := &model.WebhookEvent{
+		FromAccountID: 2267986,
+		ToAccountID:   2302663,
+		RoomID:        125747327,
+		MessageID:     "1102967319673536512",
+		Body:          "誰",
+		SendTime:      1539441501,
+		UpdateTime:    0,
+	}
+
+	chooseMemberHandler(eventObj)
+}
